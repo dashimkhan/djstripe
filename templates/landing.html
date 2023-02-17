@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Buy cool new product</title>
+    <title>Buy Item 1</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://js.stripe.com/v3/"></script>
   </head>
@@ -14,9 +14,13 @@
           <h5>${{ product.get_display_price }}</h5>
         </div>
       </div>
-      <form action="/create-checkout-session" method="POST">
-        <button type="submit" id="checkout-button">Checkout</button>
+      <form action="{% url 'buy' product.id %}" method="GET">
+          {% csrf_token %}
+        <button type="submit" id="buy-button">Buy</button>
       </form>
     </section>
   </body>
 </html>
+
+
+

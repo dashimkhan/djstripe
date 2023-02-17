@@ -1,12 +1,19 @@
 import stripe
 from django.views import View
 from django.views.generic import TemplateView
+from django.shortcuts import redirect
 from django.http import JsonResponse
 from django.conf import settings
 from .models import Product
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
+
+class SuccessView(TemplateView):
+    template_name = "success.html"
+
+class CancelView(TemplateView):
+    template_name = "cancel.html"
 
 class ProductLandingPageView(TemplateView):
     template_name = "landing.html"
@@ -21,10 +28,11 @@ class ProductLandingPageView(TemplateView):
         return context
 
 class CreateCheckoutSessionView(View):
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         product_id = self.kwargs["pk"]
         product = Product.objects.get(id=product_id)
         YOUR_DOMAIN = 'http://127.0.0.1:8000'
+        print(product)
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[
@@ -44,6 +52,7 @@ class CreateCheckoutSessionView(View):
             success_url=YOUR_DOMAIN + '/success/',
             cancel_url=YOUR_DOMAIN + '/cancel/',
         )
-        return JsonResponse({
-            'id': checkout_session.id
-        })
+        return redirect(checkout_session.url, code=303)
+        # return JsonResponse({
+        #     'id': checkout_session.id
+        # })
